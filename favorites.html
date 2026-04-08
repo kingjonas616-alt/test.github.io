@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>پیشانگای یونس — دڵخوازەکانم</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main>
+  <div class="fav-wrap">
+    <div class="page-header">
+      <h1>❤️ دڵخوازەکانم</h1>
+      <p>ئوتومبێلانەی کە ئاستت لێیانە — لێرەوە دەتوانیت بیانبیینی و بەراوردشیان بکەی</p>
+    </div>
+    <div id="fav-output"></div>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+  buildPage('favorites');
+
+  function renderFavorites() {
+    const out      = document.getElementById('fav-output');
+    const favCars  = CARS.filter(c => favorites.includes(c.id));
+    if (!favCars.length) {
+      out.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🤍</div>
+          <h3>هیچ ئوتومبێلێکت زیاد نەکردووە</h3>
+          <p>لەسەر کارتی ئوتومبێل دوگمەی 🤍 کلیک بکە بۆ زیادکردن بۆ دڵخوازەکانت</p>
+          <a class="btn btn-gold" href="cars.html">گەڕان لە ئوتومبێلەکان</a>
+        </div>`;
+      return;
+    }
+    out.innerHTML = `
+      <div style="text-align:left;margin-bottom:20px;font-size:.88rem;color:var(--text2)">${favCars.length} ئوتومبێل</div>
+      <div class="cars-grid">${favCars.map(c => carCardHTML(c)).join('')}</div>`;
+  }
+
+  renderFavorites();
+</script>
+</body>
+</html>

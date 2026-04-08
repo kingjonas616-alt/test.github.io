@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>پیشانگای یونس — بەراوردکردن</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main>
+  <div class="compare-wrap">
+    <div class="page-header">
+      <h1>⚖️ بەراوردکردنی ئوتومبێل</h1>
+      <p>تا ٣ ئوتومبێل بەراورد بکە — لە پەیجی ئوتومبێلەکان دوگمەی ⚖️ کلیک بکە بۆ زیادکردن</p>
+    </div>
+
+    <div class="compare-slots" id="compare-slots"></div>
+    <div id="compare-table-wrap"></div>
+
+    <div style="text-align:center;margin-top:40px">
+      <a class="btn btn-outline" href="cars.html">🚗 گەڕانەوە بۆ ئوتومبێلەکان</a>
+    </div>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+  buildPage('compare');
+
+  function renderCompare() {
+    const slots = document.getElementById('compare-slots');
+    const html  = [];
+    for (let i = 0; i < 3; i++) {
+      const id = compareList[i];
+      if (id) {
+        const car = CARS.find(c => c.id === id);
+        html.push(`
+          <div class="compare-slot filled">
+            <button class="slot-remove" onclick="toggleCompare(${id})">✕</button>
+            <img class="slot-car-img" src="${CAR_IMG}" alt="${car.make}"/>
+            <div class="slot-car-name">${car.make} ${car.model}</div>
+            <div class="slot-car-price">${fmt(car.price)}</div>
+            <span class="tag ${car.condition === 'new' ? 'tag-new' : 'tag-used'}" style="font-size:.72rem">
+              ${car.condition === 'new' ? 'نوێ' : 'بەکارهێنراو'}
+            </span>
+          </div>`);
+      } else {
+        html.push(`
+          <div class="compare-slot">
+            <div class="slot-empty">
+              <div class="plus">+</div>
+              <div>ئوتومبێل زیاد بکە</div>
+              <div style="font-size:.75rem;margin-top:6px;color:var(--text3)">لە پەیجی ئوتومبێلەکان<br>دوگمەی ⚖️ کلیک بکە</div>
+            </div>
+          </div>`);
+      }
+    }
+    slots.innerHTML = html.join('');
+
+    const tw = document.getElementById('compare-table-wrap');
+    if (compareList.length < 2) {
+      tw.innerHTML = `
+        <div class="empty-state" style="padding:40px 20px">
+          <div class="empty-icon">⚖️</div>
+          <h3>دوو ئوتومبێل یان زیاتر زیاد بکە</h3>
+          <p>لە پەیجی ئوتومبێلەکان ⚖️ کلیک بکە بۆ زیادکردن بۆ لیستی بەراورد</p>
+          <a class="btn btn-gold" href="cars.html">چوونە ئوتومبێلەکان</a>
+        </div>`;
+      return;
+    }
+
+    const cars = compareList.map(id => CARS.find(c => c.id === id));
+    const rows = [
+      ['نرخ',       ...cars.map(c => fmt(c.price))],
+      ['ساڵ',       ...cars.map(c => String(c.year))],
+      ['کیلۆمەتر', ...cars.map(c => c.mileage.toLocaleString() + ' km')],
+      ['دۆخ',       ...cars.map(c => c.condition === 'new' ? 'نوێ' : 'بەکارهێنراو')],
+      ['سووتمەنی', ...cars.map(c => c.fuel)],
+      ['گیربۆکس',  ...cars.map(c => c.trans)],
+      ['ڕەنگ',      ...cars.map(c => c.color)],
+    ];
+
+    const emptyTh = Array(3 - compareList.length).fill('<th></th>').join('');
+    const emptyTd = Array(3 - compareList.length).fill('<td></td>').join('');
+
+    tw.innerHTML = `
+      <div class="compare-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">تایبەتمەندی</th>
+              ${cars.map(c => `<th>${c.make} ${c.model}</th>`).join('')}${emptyTh}
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${r[0]}</td>
+                ${r.slice(1).map((v, i) => `<td class="${i === 0 ? 'highlight' : ''}">${v}</td>`).join('')}
+                ${emptyTd}
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  renderCompare();
+</script>
+</body>
+</html>

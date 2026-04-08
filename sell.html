@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>پیشانگای یونس — بفرۆشە</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main>
+  <div class="sell-wrap">
+    <div class="sell-header">
+      <div class="icon-circle">🚗</div>
+      <h1>ئوتومبێلەکەت لای ئێمە بفرۆشە</h1>
+      <p>زانیارییەکان بە دروستی پڕبکەرەوە، ئێمە بەرزترین نرخ و خێراترین کڕیارت بۆ دەدۆزینەوە.</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="steps">
+      <div class="step active" id="step-tab-1">① زانیاری کەسی</div>
+      <div class="step" id="step-tab-2">② زانیاری ئوتومبێل</div>
+      <div class="step" id="step-tab-3">③ وەصف و نرخ</div>
+    </div>
+
+    <div class="form-card" id="sell-form-card">
+      <!-- Step 1 -->
+      <div class="form-section active" id="sell-step-1">
+        <div class="form-sec-title">👤 زانیاری کەسی</div>
+        <div class="form-grid">
+          <div class="form-group"><label>ناوی سیانی *</label><input id="s-name" type="text" placeholder="ناوی خۆت بنووسە"/></div>
+          <div class="form-group"><label>ژمارەی تەلەفۆن *</label><input id="s-phone" type="tel" placeholder="0750 123 4567" dir="ltr" style="text-align:right"/></div>
+          <div class="form-group"><label>ئیمەیڵ</label><input id="s-email" type="email" placeholder="example@email.com" dir="ltr" style="text-align:right"/></div>
+          <div class="form-group"><label>شار</label><input id="s-city" type="text" placeholder="بۆ نموونە: هەولێر"/></div>
+        </div>
+        <div class="form-nav"><div></div><button class="btn-next btn" onclick="sellNext(1)">دواتر ←</button></div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-section" id="sell-step-2">
+        <div class="form-sec-title">🚘 زانیاری ئوتومبێل</div>
+        <div class="form-grid">
+          <div class="form-group"><label>جۆر (مارکە) *</label><input id="s-make" type="text" placeholder="بۆ نموونە: تۆیۆتا"/></div>
+          <div class="form-group"><label>مۆدێل *</label><input id="s-model" type="text" placeholder="بۆ نموونە: کامری"/></div>
+          <div class="form-group"><label>ساڵ *</label><input id="s-year" type="number" placeholder="2020" min="1990" max="2026"/></div>
+          <div class="form-group"><label>دۆخ *</label><select id="s-cond"><option value="used">بەکارهێنراو</option><option value="new">نوێ (سفر)</option></select></div>
+          <div class="form-group"><label>کیلۆمەتر *</label><input id="s-km" type="number" placeholder="0" min="0"/></div>
+          <div class="form-group"><label>ڕەنگ *</label><input id="s-color" type="text" placeholder="بۆ نموونە: سپی"/></div>
+          <div class="form-group"><label>جۆری سووتمەنی</label>
+            <select id="s-fuel"><option>بەنزین</option><option>دیزل</option><option>هایبرید</option><option>کارەبایی</option></select>
+          </div>
+          <div class="form-group"><label>گیربۆکس</label>
+            <select id="s-trans"><option>ئۆتۆماتیک</option><option>دەستی</option></select>
+          </div>
+        </div>
+        <div class="form-nav">
+          <button class="btn-prev btn" onclick="sellPrev(2)">→ گەڕانەوە</button>
+          <button class="btn-next btn" onclick="sellNext(2)">دواتر ←</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-section" id="sell-step-3">
+        <div class="form-sec-title">💰 وەصف و نرخ</div>
+        <div class="form-grid">
+          <div class="form-group"><label>نرخی داواکراو ($) *</label><input id="s-price" type="number" placeholder="نرخ بە دۆلار" min="0"/></div>
+          <div class="form-group"><label>ئایا ڕووپێوی هاتووە؟</label><select id="s-inspected"><option>بەڵێ</option><option>نەخێر</option></select></div>
+          <div class="form-group full"><label>وەصفی ئوتومبێل *</label><textarea id="s-desc" placeholder="هەر زانیارییەکی تر کە پێویستە کڕیار بیزانێت..."></textarea></div>
+        </div>
+        <div class="form-nav">
+          <button class="btn-prev btn" onclick="sellPrev(3)">→ گەڕانەوە</button>
+          <button class="btn-next btn" onclick="sellSubmit()">✅ ناردنی داواکاری</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="sell-success" id="sell-success-view" style="display:none">
+      <div class="check">✅</div>
+      <h2>داواکارییەکەت سەرکەوتوو بوو!</h2>
+      <p>زانیارییەکانی ئوتومبێلەکەت گەیشتە دەستمان. تیمیمان لە نزیکترین کاتدا پەیوەندیت پێوە دەکات.</p>
+      <a class="btn btn-gold" href="index.html" style="margin:28px auto 0">گەڕانەوە بۆ سەرەکی</a>
+    </div>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+  buildPage('sell');
+
+  function sellNext(step) {
+    if (step === 1 && (!document.getElementById('s-name').value.trim() || !document.getElementById('s-phone').value.trim())) {
+      toast('تکایە زانیاری کەسی پڕبکەرەوە', 'error'); return;
+    }
+    if (step === 2 && (!document.getElementById('s-make').value.trim() || !document.getElementById('s-model').value.trim() || !document.getElementById('s-year').value)) {
+      toast('تکایە زانیاری ئوتومبێل پڕبکەرەوە', 'error'); return;
+    }
+    document.getElementById(`sell-step-${step}`).classList.remove('active');
+    document.getElementById(`sell-step-${step + 1}`).classList.add('active');
+    document.getElementById(`step-tab-${step}`).classList.replace('active', 'done');
+    document.getElementById(`step-tab-${step + 1}`).classList.add('active');
+  }
+
+  function sellPrev(step) {
+    document.getElementById(`sell-step-${step}`).classList.remove('active');
+    document.getElementById(`sell-step-${step - 1}`).classList.add('active');
+    document.getElementById(`step-tab-${step}`).classList.remove('active');
+    document.getElementById(`step-tab-${step - 1}`).classList.remove('done');
+    document.getElementById(`step-tab-${step - 1}`).classList.add('active');
+  }
+
+  function sellSubmit() {
+    if (!document.getElementById('s-price').value || !document.getElementById('s-desc').value.trim()) {
+      toast('تکایە وەصف و نرخ پڕبکەرەوە', 'error'); return;
+    }
+    document.getElementById('sell-form-card').style.display = 'none';
+    document.getElementById('sell-success-view').style.display = 'block';
+    document.querySelectorAll('.steps .step').forEach(s => { s.classList.remove('active'); s.classList.add('done'); });
+    toast('داواکارییەکەت ناردرا! ✅');
+  }
+</script>
+</body>
+</html>

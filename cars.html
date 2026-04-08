@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>پیشانگای یونس — ئوتومبێلەکان</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main>
+  <section class="sec" style="padding-bottom:0">
+    <div style="max-width:1200px;margin:0 auto 32px">
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:6px">
+        گەڕان لە <em style="font-style:normal;color:var(--gold)">ئوتومبێلەکان</em>
+      </h1>
+      <p style="color:var(--text2);font-size:.9rem">دۆزینەوەی ئوتومبێلی خەونەکانت لێرەوە دەست پێدەکات</p>
+    </div>
+
+    <div class="cars-layout">
+      <!-- Sidebar Filters -->
+      <div class="sidebar">
+        <h3>🔽 فلتەرەکان</h3>
+        <div class="filter-group">
+          <label class="filter-title">دۆخی ئوتومبێل</label>
+          <label class="radio-option"><input type="radio" name="cond" value="" checked onchange="applyFilters()"><span>هەموو</span></label>
+          <label class="radio-option"><input type="radio" name="cond" value="new" onchange="applyFilters()"><span>نوێ</span></label>
+          <label class="radio-option"><input type="radio" name="cond" value="used" onchange="applyFilters()"><span>بەکارهێنراو</span></label>
+        </div>
+        <div class="filter-group">
+          <label class="filter-title">جۆر (مارکە)</label>
+          <div id="make-filters"></div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-title">نرخ ($)</label>
+          <div class="range-inputs">
+            <input type="number" id="price-min" placeholder="کەمترین" onchange="applyFilters()"/>
+            <input type="number" id="price-max" placeholder="زۆرترین" onchange="applyFilters()"/>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-title">ساڵ</label>
+          <div class="range-inputs">
+            <input type="number" id="year-min" placeholder="لە" onchange="applyFilters()"/>
+            <input type="number" id="year-max" placeholder="تا" onchange="applyFilters()"/>
+          </div>
+        </div>
+        <button class="sidebar-reset" onclick="resetFilters()">🗑 پاکردنەوەی فلتەرەکان</button>
+      </div>
+
+      <!-- Cars Main Area -->
+      <div class="cars-main">
+        <div class="cars-toolbar">
+          <div class="toolbar-left">
+            <input class="search-input" id="cars-search" type="text"
+              placeholder="🔍 گەڕان بەپێی جۆر، مۆدێل..." oninput="applyFilters()"/>
+            <select class="sort-select" id="cars-sort" onchange="applyFilters()">
+              <option value="">ریزکردن...</option>
+              <option value="price-asc">نرخ: کەمترین دەست پێ</option>
+              <option value="price-desc">نرخ: زۆرترین دەست پێ</option>
+              <option value="year-desc">نوێترین ساڵ</option>
+              <option value="year-asc">کۆنترین ساڵ</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn active" id="grid-btn" onclick="setView('grid')" title="گرید">⊞</button>
+            <button class="view-btn" id="list-btn" onclick="setView('list')" title="لیست">≡</button>
+          </div>
+        </div>
+        <div class="results-count" id="results-count"></div>
+        <div id="cars-output"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+  buildPage('cars');
+  let currentView = 'grid';
+
+  // Build make filter radios
+  const makes = [...new Set(CARS.map(c => c.make))];
+  document.getElementById('make-filters').innerHTML =
+    `<label class="radio-option"><input type="radio" name="make" value="" checked onchange="applyFilters()"><span>هەموو</span></label>` +
+    makes.map(m => `<label class="radio-option"><input type="radio" name="make" value="${m}" onchange="applyFilters()"><span>${m}</span></label>`).join('');
+
+  function applyFilters() {
+    const search = document.getElementById('cars-search').value.toLowerCase();
+    const cond   = document.querySelector('input[name="cond"]:checked')?.value || '';
+    const make   = document.querySelector('input[name="make"]:checked')?.value || '';
+    const pMin   = parseFloat(document.getElementById('price-min').value) || 0;
+    const pMax   = parseFloat(document.getElementById('price-max').value) || Infinity;
+    const yMin   = parseInt(document.getElementById('year-min').value)   || 0;
+    const yMax   = parseInt(document.getElementById('year-max').value)   || 9999;
+    const sort   = document.getElementById('cars-sort').value;
+
+    let list = CARS.filter(c =>
+      (!search || c.make.includes(search) || c.model.includes(search) || c.desc.includes(search)) &&
+      (!cond   || c.condition === cond) &&
+      (!make   || c.make === make) &&
+      c.price >= pMin && c.price <= pMax &&
+      c.year  >= yMin && c.year  <= yMax
+    );
+
+    if (sort === 'price-asc')  list.sort((a, b) => a.price - b.price);
+    if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
+    if (sort === 'year-desc')  list.sort((a, b) => b.year  - a.year);
+    if (sort === 'year-asc')   list.sort((a, b) => a.year  - b.year);
+
+    document.getElementById('results-count').textContent = `${list.length} ئوتومبێل دۆزرایەوە`;
+
+    const out = document.getElementById('cars-output');
+    if (!list.length) {
+      out.innerHTML = `<div style="text-align:center;padding:80px 20px;color:var(--text2)">
+        <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+        <h3 style="font-size:1.2rem;margin-bottom:8px">هیچ ئوتومبێلێک نەدۆزرایەوە</h3>
+        <p style="font-size:.88rem">هەوڵبدە فلتەرەکانت بگۆڕیت</p></div>`;
+      return;
+    }
+    if (currentView === 'grid') {
+      out.className = 'cars-grid';
+      out.innerHTML = list.map(c => carCardHTML(c)).join('');
+    } else {
+      out.className = 'cars-list';
+      out.innerHTML = list.map(c => carListHTML(c)).join('');
+    }
+  }
+
+  function resetFilters() {
+    document.querySelectorAll('input[name="cond"]')[0].checked = true;
+    document.querySelectorAll('input[name="make"]')[0].checked = true;
+    ['price-min','price-max','year-min','year-max'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cars-search').value = '';
+    document.getElementById('cars-sort').value = '';
+    applyFilters();
+  }
+
+  function setView(v) {
+    currentView = v;
+    document.getElementById('grid-btn').classList.toggle('active', v === 'grid');
+    document.getElementById('list-btn').classList.toggle('active', v === 'list');
+    applyFilters();
+  }
+
+  applyFilters();
+</script>
+</body>
+</html>
